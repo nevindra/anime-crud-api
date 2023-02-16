@@ -19,7 +19,7 @@ func GetUsers(c *fiber.Ctx) error {
 func GetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 	user := models.User{}
-	database.DB.Db.Find(&user, id)
+	database.DB.Db.Where("ID = ?", id).First(&user)
 	// check if user is found
 	if user.ID == "" {
 		return c.Status(404).JSON(fiber.Map{
@@ -79,7 +79,9 @@ func CreateUser(c *fiber.Ctx) error {
 
 	// create user
 	database.DB.Db.Create(&user)
-	return c.JSON(user)
+
+	// return with 201 status code
+	return c.Status(201).JSON(user)
 }
 
 func UpdateUser(c *fiber.Ctx) error {

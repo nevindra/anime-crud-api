@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -66,7 +66,7 @@ func CreateReview(c *fiber.Ctx) error {
 	return c.Status(201).JSON(review)
 }
 
-// create a function to update the review
+// UpdateReview create a function to update the review
 func UpdateReview(c *fiber.Ctx) error {
 	// find review by string id
 	id := c.Params("id")

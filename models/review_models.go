@@ -1,6 +1,6 @@
 package models
 
-// `Review` model is used to store review data,
+// Review model is used to store review data,
 // User ID and Anime ID is foreign key from `User` and `Anime` model
 type Review struct {
 	ID      int    `json:"id"`

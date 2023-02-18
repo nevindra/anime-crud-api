@@ -14,7 +14,7 @@ func main() {
 	database.ConnectDatabase()
 	app := fiber.New()
 
-	// setup routes
+	// setup handlers
 	routes.Init(app)
 
 	// enable cors
@@ -29,6 +29,7 @@ func main() {
 		Format: "[${ip}]:${port} ${status} - ${method} ${path}\n",
 	}))
 
-	// start server
-	app.Listen(":3000")
+	if err := app.Listen(":3000"); err != nil {
+		panic(err)
+	}
 }

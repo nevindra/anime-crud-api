@@ -10,19 +10,12 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-// setup user routes
-func setupUserRoutes(app *fiber.App) {
-	app.Get("/api/users", routes.GetUsers)
-	app.Get("/api/users/:id", routes.GetUser)
-	app.Post("/api/users", routes.CreateUser)
-	app.Put("/api/users/:id", routes.UpdateUser)
-	app.Post("/api/login", routes.Login)
-}
-
 func main() {
 	database.ConnectDatabase()
 	app := fiber.New()
-	setupUserRoutes(app)
+
+	// setup routes
+	routes.Init(app)
 
 	// enable cors
 	app.Use(cors.New())

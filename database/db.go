@@ -27,7 +27,9 @@ func ConnectDatabase() {
 
 	log.Println("Database connected")
 	log.Println("running migrations")
-	db.AutoMigrate(&models.User{})
+
+	// Migrate the schema
+	db.AutoMigrate(&models.User{}, &models.Anime{}, &models.Review{})
 
 	DB = DBStruct{
 		Db: db,

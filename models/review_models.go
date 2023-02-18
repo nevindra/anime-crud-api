@@ -7,4 +7,5 @@ type Review struct {
 	Content string `json:"content"`
 	UserID  User   `json:"user_id" gorm:"foreignKey:UserID;references:ID"`
 	AnimeID Anime  `json:"anime_id" gorm:"foreignKey:AnimeID;references:ID"`
+	Rating  int    `json:"rating"`
 }

@@ -38,10 +38,10 @@ func CreateAnime(c *fiber.Ctx) error {
 		return c.Status(503).SendString(err.Error())
 	}
 
-	// check if every field is filled
-	if anime.Title == "" || anime.Description == "" || anime.Episodes == 0 {
+	// check if `title` or `description` is empty and `episode` is less than 1
+	if anime.Title == "" || anime.Description == "" || anime.Episodes < 1 {
 		return c.Status(400).JSON(fiber.Map{
-			"message": "Every field is required",
+			"message": "Title, Description and Episode is required",
 		})
 	}
 
@@ -57,7 +57,8 @@ func CreateAnime(c *fiber.Ctx) error {
 	// create anime
 	database.DB.Db.Create(&anime)
 
-	return c.JSON(anime)
+	// return with status 201 and anime
+	return c.Status(201).JSON(anime)
 }
 
 func UpdateAnime(c *fiber.Ctx) error {

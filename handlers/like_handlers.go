@@ -39,7 +39,7 @@ func SendPostLike(c *fiber.Ctx) error {
 	}
 
 	// check if user is already liked the post
-	likeModel := models.Like{}
+	likeModel := models.PostLike{}
 	database.DB.Db.Where("user_id = ? AND post_id = ?", like.UserID, like.PostID).
 		First(&likeModel)
 	if likeModel.ID != 0 {
@@ -48,17 +48,71 @@ func SendPostLike(c *fiber.Ctx) error {
 		// decrease post like count
 		database.DB.Db.Model(&post).Update("like_count", post.LikeCount-1)
 		return c.JSON(fiber.Map{
-			"message": "Like deleted",
+			"message": "PostLike deleted",
 		})
 	} else {
 		// if user not liked the post, create a new like
-		AddLike := models.Like{
+		AddLike := models.PostLike{
 			UserID: user,
 			PostID: post,
 		}
 		database.DB.Db.Create(&AddLike)
 		// increase post like count
 		database.DB.Db.Model(&post).Update("like_count", post.LikeCount+1)
+		return c.JSON(fiber.Map{
+			"message": "PostLike added",
+		})
+	}
+}
+
+// SendCommentLike is a function to send a like to a comment
+// User ID and Comment ID will be sent in the request body
+func SendCommentLike(c *fiber.Ctx) error {
+	var like LikeInput
+	// parse like input
+	if err := c.BodyParser(&like); err != nil {
+		return c.Status(503).SendString(err.Error())
+	}
+
+	// check if comment is found
+	comment := models.Comment{}
+	database.DB.Db.Where("ID = ?", like.PostID).First(&comment)
+	if comment.ID == 0 {
+		return c.Status(404).JSON(fiber.Map{
+			"message": "Comment not found",
+		})
+	}
+
+	// check if user is found
+	user := models.User{}
+	database.DB.Db.Where("ID = ?", like.UserID).First(&user)
+	if user.ID == "" {
+		return c.Status(404).JSON(fiber.Map{
+			"message": "User not found",
+		})
+	}
+
+	// check if user is already liked the comment
+	likeModel := models.CommentLike{}
+	database.DB.Db.Where("user_id = ? AND comment_id = ?", like.UserID, like.PostID).
+		First(&likeModel)
+	if likeModel.ID != 0 {
+		// if user already liked the comment, delete the like
+		database.DB.Db.Delete(&likeModel)
+		// decrease comment like count
+		database.DB.Db.Model(&comment).Update("like_count", comment.LikeCount-1)
+		return c.JSON(fiber.Map{
+			"message": "Like deleted",
+		})
+	} else {
+		// if user not liked the comment, create a new like
+		AddLike := models.CommentLike{
+			UserID:    user,
+			CommentID: comment,
+		}
+		database.DB.Db.Create(&AddLike)
+		// increase comment like count
+		database.DB.Db.Model(&comment).Update("like_count", comment.LikeCount+1)
 		return c.JSON(fiber.Map{
 			"message": "Like added",
 		})
@@ -82,7 +136,7 @@ func GetPostLikes(c *fiber.Ctx) error {
 	likeCount := post.LikeCount
 
 	// get all likes of the post
-	var likes []models.Like
+	var likes []models.PostLike
 	database.DB.Db.Where("post_id = ?", id).Find(&likes)
 
 	// get all users who liked the post

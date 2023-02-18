@@ -125,7 +125,7 @@ func UpdateUser(c *fiber.Ctx) error {
 
 }
 
-func Login(c *fiber.Ctx) error {
+func LoginUser(c *fiber.Ctx) error {
 	// get user input
 	user := new(models.User)
 
